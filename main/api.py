@@ -73,7 +73,9 @@ def list_books(request):
             "summary": book.summary,
             "copies_available": book.copies_available,
             "file": str(book.file.url) if book.file else None,
+            "image": str(book.image.url) if book.image else None,  # Safely handle image field
         })
+
     return response
 
 @router.post("/books", response=BookSchema, auth=BearerAuth())

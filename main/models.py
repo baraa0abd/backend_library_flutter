@@ -27,6 +27,7 @@ class Book(models.Model):
     summary = models.TextField(max_length=1000, help_text='Brief description of the book')
     copies_available = models.PositiveIntegerField(default=1)
     file = models.FileField(upload_to="files")
+    image = models.ImageField(upload_to="files/pics")
 
     def __str__(self):
         return self.title

@@ -20,4 +20,5 @@ class BookSchema(Schema):
     isbn: str
     summary: str
     copies_available: int
-    file: str
+    file: Optional[str]  # Make file optional to handle None
+    image: Optional[str]  # Make image optional to handle None
