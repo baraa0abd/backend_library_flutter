@@ -5,6 +5,13 @@ from ninja.security import HttpBearer
 from rest_framework.authtoken.models import Token
 from .Schema import *
 from ninja import Router
+from django.utils.dateformat import format
+
+
+
+
+
+
 # Security class for Bearer Authentication
 class BearerAuth(HttpBearer):
     def authenticate(self, request, token):
@@ -44,10 +51,30 @@ def create_author(request, first_name: str, last_name: str, date_of_birth: str =
     )
     return author
 
-# Book APIs
 @router.get("/books", response=List[BookSchema], auth=BearerAuth())
 def list_books(request):
-    return Book.objects.prefetch_related('author', 'genre').all()
+    books = Book.objects.prefetch_related("author", "genre").all()
+
+    # Convert datetime.date fields to string format
+    response = []
+    for book in books:
+        response.append({
+            "id": book.id,
+            "title": book.title,
+            "author": {
+                "id": book.author.id,
+                "first_name": book.author.first_name,
+                "last_name": book.author.last_name,
+                "date_of_birth": format(book.author.date_of_birth, "Y-m-d") if book.author.date_of_birth else None,
+                "date_of_death": format(book.author.date_of_death, "Y-m-d") if book.author.date_of_death else None,
+            },
+            "genre": [{"id": genre.id, "name": genre.name} for genre in book.genre.all()],
+            "isbn": book.isbn,
+            "summary": book.summary,
+            "copies_available": book.copies_available,
+            "file": str(book.file.url) if book.file else None,
+        })
+    return response
 
 @router.post("/books", response=BookSchema, auth=BearerAuth())
 def create_book(request, title: str, author_id: int, genre_ids: List[int], isbn: str, summary: str, copies_available: int, file: str):
