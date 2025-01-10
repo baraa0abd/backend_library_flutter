@@ -5,6 +5,8 @@ from ninja.security import HttpBearer
 from typing import Dict
 from .schema import *
 from rest_framework.authtoken.models import Token
+from ninja import Router
+
 
 # Security class for Bearer Authentication
 class BearerAuth(HttpBearer):
@@ -17,9 +19,9 @@ class BearerAuth(HttpBearer):
             return None
 
 # API instance
-api = NinjaAPI()
+router = Router()
 
-@api.post("/signup", response={200: MessageResponse, 400: MessageResponse})
+@router.post("/signup", response={200: MessageResponse, 400: MessageResponse})
 def signup(request, payload: SignUpSchema):
     if User.objects.filter(username=payload.username).exists():
         return 400, {"message": "Username already exists"}
@@ -33,7 +35,7 @@ def signup(request, payload: SignUpSchema):
     return {"message": "User created successfully"}
 
 # Login API
-@api.post("/login", response={200: LoginResponse, 401: MessageResponse})
+@router.post("/login", response={200: LoginResponse, 401: MessageResponse})
 def login_user(request, payload: LoginSchema):
     user = authenticate(username=payload.username, password=payload.password)
     if user is not None:
@@ -43,9 +45,11 @@ def login_user(request, payload: LoginSchema):
     return 401, {"message": "Invalid username or password"}
 
 # Logout API
-@api.post("/logout", auth=BearerAuth(), response={200: MessageResponse})
+@router.post("/logout", auth=BearerAuth(), response={200: MessageResponse})
 def logout_user(request):
     token = Token.objects.get(user=request.user)
     token.delete()
     logout(request)
     return {"message": "Successfully logged out"}
+
+
