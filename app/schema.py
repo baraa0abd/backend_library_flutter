@@ -1,16 +1,16 @@
-from ninja import Schema
+from pydantic import BaseModel, EmailStr
 
-class SignUpSchema(Schema):
+class SignUpSchema(BaseModel):
     username: str
     password: str
-    email: str
+    email: EmailStr
 
-class LoginSchema(Schema):
+class LoginSchema(BaseModel):
     username: str
     password: str
 
-class MessageResponse(Schema):
+class MessageResponse(BaseModel):
     message: str
 
-class LoginResponse(Schema):
+class LoginResponse(BaseModel):
     token: str

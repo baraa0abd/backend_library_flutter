@@ -13,11 +13,18 @@ SECRET_KEY = 'django-insecure-_0)-@dl*uq0tl9_)b_ix5ui5nff6=o&4@t3h)nt@l1ucj*uhwe
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+CORS_ALLOWED_ORIGINS = [
+    "http://192.168.1.67:8000",  # Django server
+    "http://127.0.0.1:51423",
+        # Dart VM Service without the path
+]
 
 
 # Application definition
+import os
+
+DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-_0)-@dl*uq0tl9_)b_ix5ui5nff6=o&4@t3h)nt@l1ucj*uhwe")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -30,19 +37,25 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'app',
     'main',
+    "graphene_django",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 ROOT_URLCONF = 'practice.urls'
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+
 
 TEMPLATES = [
     {
@@ -120,6 +133,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',  # Change this based on your API needs
     ],
 }
+
+ALLOWED_HOSTS = ['192.168.109.174' , '127.0.0.1' , '192.168.1.67']
